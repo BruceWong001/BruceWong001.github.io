@@ -11,6 +11,7 @@ tags:
     - Agile
     - 随笔
     - Scrum
+    - ProductOwner
 ---
 
 工作中经常会遇到用户思维和开发思维的碰撞，尤其是开发和Product Manager之间。今天想来聊聊这个话题。 
