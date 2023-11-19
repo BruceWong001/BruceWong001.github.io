@@ -30,7 +30,7 @@ Iris老师用幽默的方式，分享了她和她的团队的武功秘籍：
 - 第六式：让团队自己做决定。
 
 还等什么，小伙伴们，用这套心法去你的团队尝试一下吧！
-![Untitled](/img/agiletour/2023/Untitled%201.jpeg)
+![Untitled](/img/agiletour/2023/IMG_0715.jpeg)
 
 ### 工作坊：实例化需求那些事
 
