@@ -4,7 +4,7 @@ SEOTitle: 布鲁斯的博客 | Bruce Wong Blog
 header-img: img/macbook-Head.jpg
 email: djwdz@hotmail.com
 description: "Make the impossible possible."
-keyword: "BW, Bruce Wong Blog, 布鲁斯的博客,王东喆的博客,Bruce Wang Blog,wdz, BruceTalk, Agile, OKR"
+keyword: "BW, Bruce Wong Blog, 布鲁斯的博客,王东喆的博客,Bruce Wang Blog,wdz, BruceTalk, Agile, Scrum, OKR"
 url: "https://brucetalk.com"          # your host, for absolute URL
 baseurl: ""      # for example, '/blog' if your blog hosted on 'host/blog'
 github_repo: "https://github.com/BruceWong001/BruceWong001.github.io.git" # you code repository
@@ -76,7 +76,7 @@ kramdown:
 
 # Analytics settings
 # Baidu Analytics
-ba_track_id: b83798580f8555c69d007fd0c68fa550
+ba_track_id: e234635e426cadead82f7e6271b1ef57
 
 # Google Analytics
 #ga_track_id: 'UA-90855596-1'            # Format: UA-xxxxxx-xx
@@ -93,7 +93,7 @@ featured-condition-size: 1              # 相同标签数量大于这个数，�
 
 
 # Progressive Web Apps
-chrome-tab-theme-color: "#000000" 
+chrome-tab-theme-color: "#000000"
 service-worker: true
 
 
@@ -115,13 +115,13 @@ friends: [
     {
         title: "知乎-Lexie W",
         href: "https://www.zhihu.com/people/lexieW1917"
-    
+
 
     },
     {
         title: "Agile123.net",
         href: "https://agile123.net"
-    
+
 
     }
 ]
