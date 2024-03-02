@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      如何“离开”你的舒适区
+title:      “离开”还是“拓展”你的舒适区
 subtitle:
 date:       2024-03-02
 author:     Bruce Wong
