@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      探究bug越改越多的原因
+title:      恶性竞争-探究bug越改越多的原因
 subtitle:   系统思考实践(5)
 date:       2025-01-04
 author:     Bruce Wong
