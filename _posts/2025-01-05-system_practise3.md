@@ -2,7 +2,7 @@
 layout:     post
 title:      探究bug越改越多的原因
 subtitle:   系统思考实践(5)
-date:       2025-01-05
+date:       2025-01-04
 author:     Bruce Wong
 header-img: img/IMG_4683.webp
 catalog: true
