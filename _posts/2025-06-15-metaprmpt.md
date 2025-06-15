@@ -90,7 +90,7 @@ Please read the following news article and provide a comprehensive summary that 
 {prototype 提示}
 只输出优化后的提示。
 ```
-** Note：**: 上面这个例子的元提示比较简单，如果想参考更综合更强大的元提示，OpenAI提供了一个通用的Meta-prompts模板，可以参考[Prompt generation](https://platform.openai.com/docs/guides/prompt-generation#overview)直接使用或者修改你自己的版本。
+**Note：** 上面这个例子的元提示比较简单，如果想参考更综合更强大的元提示，OpenAI提供了一个通用的Meta-prompts模板，可以参考[Prompt generation](https://platform.openai.com/docs/guides/prompt-generation#overview)直接使用或者修改你自己的版本。
 ![Agent定义](/img/AI/metaprompts.png)
 
 4. 调用高级别的模型生成新 prompt:
