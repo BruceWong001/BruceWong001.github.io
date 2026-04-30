@@ -45,15 +45,19 @@ Foundry 用三个设计解决：
 | 没数据 | **合成测试数据** — 基于场景自动生成 |
 | 不知道测什么 | **40+ Built-in Evaluator** — 覆盖 Agent 全生命周期 |
 | 测完没法用 | **SDK + CI/CD 集成** — 分数直接变成质量门禁 |
+
 ---
-# 40+ Built-in Evaluator 覆盖什么？
+
+## 40+ Built-in Evaluator 覆盖什么？
 这是 Foundry 的核心资产。开箱即用，不用自己定义评估逻辑。
 ### 三大类评估维度
+
 | 类型 | 代表 Evaluator | 解决什么问题 |
 |------|---------------|-------------|
 | **基础质量** | Groundedness, Relevance, Coherence | 回答是否准确、切题、连贯 |
 | **Agent 能力** | Tool Call Accuracy, Parameter Correctness, Session Completeness | 工具调用对不对、参数准不准、任务有没有完成 |
 | **安全合规** | Harmful Content, Jailbreak Resistance, Protected Material | 有没有幻觉、有没有被注入、有没有泄露 |
+
 ---
 
 **你的团队开始做AgentEvaluation了吗？要不要尝试一下Microsoft Foundry?**
