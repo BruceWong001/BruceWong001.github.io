@@ -9,7 +9,7 @@ catalog: true
 tags:
     - Agile
     - 敏捷
-    - 随笔
+    - Prompt Engineering
     - AI
 ---
 
