@@ -4,7 +4,7 @@ title:      元提示之——推理标签
 subtitle:   Meta‑prompts 工具解析
 date:       2025-06-29
 author:     Bruce Wong
-header-img: img/IMG_1515.WEBP
+header-img: img/IMG_3816.jpeg
 catalog: true
 tags:
     - Agile

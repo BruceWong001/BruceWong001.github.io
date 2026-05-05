@@ -9,7 +9,8 @@ catalog: true
 tags:
     - Agile
     - TDD
-    - 敏捷
+    - AI Coding
+    - Copilot
     - AI
 ---
 
