@@ -1,0 +1,225 @@
+---
+layout:     post
+title:      GitHub Copilot CLI：CLI、SDK 与 Background Agent 到底是什么关系？
+subtitle:   Copilot CLI（2）
+date:       2026-05-10
+author:     Bruce Wong
+header-img: img/copilot_cli.webp
+catalog: true
+tags:
+    - Agile
+    - AI Coding
+    - Copilot
+    - AI
+---
+
+上一篇我们介绍了 Copilot CLI 是什么，以及它与 VS Code Copilot 的区别。这一篇我们来厘清三个容易混淆的概念：**Copilot CLI**、**Copilot SDK**、**VS Code Background Agent**，它们各自是什么，以及之间的关系。
+
+---
+
+## 一、三个概念快速定位
+
+| 概念 | 一句话定义 | 面向谁 |
+|------|----------|--------|
+| **Copilot CLI** | 终端原生的 AI 编程 Agent | 终端用户、开发者 |
+| **Copilot SDK** | 调用 CLI 能力的编程接口库 | 构建工具的开发者 |
+| **VS Code Background Agent** | VS Code 里调用的 CLI 后台会话 | VS Code 用户 |
+
+---
+
+## 二、Copilot CLI：核心引擎
+
+这是三者中最底层的**实体**。
+
+### 它是什么
+
+Copilot CLI 是一个**独立的终端应用程序**，安装在你的机器上，脱离 VS Code 也能运行：
+
+```bash
+# 直接启动，不依赖任何 IDE
+copilot
+```
+
+启动后，你会进入一个**全屏终端交互界面**（TUI），可以：
+- 和 AI 对话
+- 执行 Plan Mode、Autopilot Mode
+- 用 `&` 委托任务到云端
+- 用 `/resume` 恢复之前的会话
+
+### 关键特性
+
+| 特性 | 说明 |
+|------|------|
+| **独立进程** | 有自己的进程 ID，不在 VS Code 内部 |
+| **survives VS Code 关闭** | VS Code 关了，CLI 会话还能跑 |
+| **不 survive 终端关闭** | 默认关了终端 = 会话结束（除非用 tmux/screen）|
+| **多会话并行** | 支持 `/fleet` 命令同时跑多个子 Agent |
+| **云端委托** | `&` 前缀推到 GitHub Cloud Actions runner |
+
+---
+
+## 三、Copilot SDK：CLI 的编程接口
+
+SDK 不是另一个产品，而是**CLI 的"遥控器"**。
+
+### 官方定义
+
+> *"GitHub Copilot SDK communicates with GitHub Copilot CLI via **JSON-RPC protocol**.*"
+
+### 它是什么
+
+SDK 是一个 **TypeScript/JavaScript 库**，让开发者可以在自己的代码里**程序化地控制 Copilot CLI**：
+
+```typescript
+import { createClient } from '@github/copilot-sdk'
+
+const client = await createClient()
+const session = await client.createSession({
+  workingDirectory: './my-project',
+  model: 'claude-sonnet-4'
+})
+
+await session.send("帮我重构这个模块")
+const messages = await session.getMessages()
+```
+
+### SDK vs CLI 的能力差异
+
+| 功能 | CLI（直接用） | SDK（代码调用） |
+|------|--------------|----------------|
+| 创建会话 | ✅ `copilot` | ✅ `createSession()` |
+| 交互式 TUI | ✅ 有 | ❌ 无（纯代码接口）|
+| 发送消息 | ✅ 打字 | ✅ `send()` |
+| 工具注册 | ✅ 内置 | ✅ `registerTools()` |
+| 模型切换 | ✅ `/model` | ✅ `setModel()` |
+| 会话导出 | ✅ `--share` | ❌ 需手动收集 events |
+| 后台委托 `&` | ✅ | ❌ 不支持 |
+| 权限快捷操作 | ✅ `--yolo` | ⚠️ 用 `onPermissionRequest` 回调 |
+| 主题/颜色/鼠标 | ✅ 有 | ❌ 无（终端专属）|
+
+**关键洞察**：SDK 能做的事 CLI 都能做（因为 SDK 底层调的就是 CLI），但 CLI 的很多**终端交互功能**在 SDK 里不可用。
+
+### 什么时候用 SDK
+
+| 场景 | 例子 |
+|------|------|
+| 构建自定义工具 | 做一个"自动代码审查机器人" |
+| 集成到现有应用 | 在内部 DevPortal 里嵌入 AI 能力 |
+| 自动化工作流 | 定时触发 Copilot 分析并输出报告 |
+| 批量处理 | 遍历 100 个仓库，让每个跑一遍 Copilot |
+
+---
+
+## 四、VS Code Background Agent：CLI 的 VS Code 包装
+
+这是最容易和 CLI 混淆的概念。
+
+### 它是什么
+
+VS Code Background Agent 是 **VS Code 界面里对 Copilot CLI 的集成包装**：
+
+> *"Copilot CLI sessions run independently in the background on your local machine and use the Copilot CLI agent harness."*
+
+当你在 VS Code 的 Chat 视图里选择 **"Copilot CLI"** 作为 session target 时，VS Code 会：
+
+1. 在后台启动一个 **Copilot CLI 进程**
+2. 通过 **Copilot SDK**（或类似机制）与这个进程通信
+3. 在 VS Code 的 Chat 视图里**显示 CLI 的输出**
+4. 让你可以用 GUI 方式**管理、监控、切换** CLI 会话
+
+### 关系图
+
+```
+┌─────────────────────────────────────────┐
+│           VS Code 界面层                  │
+│  ┌─────────────┐    ┌─────────────────┐ │
+│  │ Local Agent │    │ Background Agent  │ │
+│  │ (IDE 内部)   │    │ (Copilot CLI)   │ │
+│  └─────────────┘    └─────────────────┘ │
+│                            ↓            │
+│                     ┌─────────────┐     │
+│                     │ Copilot CLI │     │
+│                     │ (独立进程)   │     │
+│                     │ 本地运行     │     │
+│                     └─────────────┘     │
+└─────────────────────────────────────────┘
+```
+
+### Background Agent vs 纯 CLI 的核心差异
+
+| 维度 | VS Code Background Agent | 纯 CLI（终端直接启动）|
+|------|------------------------|---------------------|
+| **启动方式** | Chat 视图下拉选择 | 终端输入 `copilot` |
+| **监控进度** | ✅ Chat 视图实时可视化 | ❌ 纯文本，需主动查看 |
+| **多会话管理** | ✅ 侧边栏列表直观 | ⚠️ `/resume` 列表或 `/fleet` |
+| **关闭 IDE 后** | ✅ 继续运行 | ✅ 继续运行 |
+| **关闭终端后** | ✅ 继续运行 | ❌ 默认结束 |
+| **恢复方式** | VS Code `/resume` 或 Chat 视图 | 终端 `copilot /resume` |
+
+**关键洞察**：Background Agent 的"后台不阻塞"体验，**不是 CLI 本身提供的**，而是 VS Code 作为 GUI 包装后的效果。纯 CLI 关了终端就结束。
+
+---
+
+## 五、三者关系总结
+
+### 类比理解
+
+| 类比 | CLI | SDK | VS Code Background Agent |
+|------|-----|-----|------------------------|
+| 数据库 | `psql` 命令行 | `pg` Node.js 驱动 | 数据库管理 GUI 工具 |
+| 容器 | `docker` CLI | `dockerode` JS 库 | Docker Desktop |
+| 云服务 | `aws` CLI | `aws-sdk` JS 库 | AWS 控制台 |
+
+### 核心关系
+
+```
+Copilot CLI（引擎）
+    ↑
+    │ JSON-RPC 协议
+    ↓
+Copilot SDK（编程接口）—— 被代码调用
+    ↑
+    │ 集成封装
+    ↓
+VS Code Background Agent（GUI 包装）—— 被用户点击使用
+```
+
+**一句话**：
+- **CLI 是发动机**
+- **SDK 是方向盘+油门踏板**（程序化控制发动机）
+- **Background Agent 是整车内饰**（让用户舒服地驾驶）
+
+---
+
+## 六、实际选择建议
+
+| 你的场景 | 推荐方式 | 原因 |
+|---------|---------|------|
+| 日常终端开发，喜欢命令行 | **纯 CLI** | 最直接，无依赖 |
+| 主要用 VS Code，偶尔需要后台任务 | **VS Code Background Agent** | 图形化管理，体验最好 |
+| 想做一个自动化工具或内部平台 | **SDK** | 代码集成，可编程控制 |
+| SSH 远程服务器、Docker 容器 | **纯 CLI** | 无 GUI 环境唯一选择 |
+| 需要长时间任务不阻塞，且不在 VS Code 旁 | **`&` 云端委托** | 本地关机也继续 |
+
+---
+
+## 七、常见误区澄清
+
+### 误区 1："CLI 是 SDK 的命令行版"
+
+❌ 反了。SDK 是 CLI 的编程包装，CLI 是底层实体。
+
+### 误区 2："Background Agent 是独立产品"
+
+❌ 不是。它是 VS Code 对 CLI 的集成调用，底层同一个引擎。
+
+### 误区 3："`&` 是本地后台运行"
+
+❌ 不是。`&` 是**云端委托**（GitHub Cloud Actions runner），本地关机也继续。本地后台是 VS Code Background Agent 或 tmux + CLI。
+
+### 误区 4："SDK 能做 CLI 所有的事"
+
+❌ 不能。TUI 交互、主题、`&` 云端委托等功能 SDK 没有。
+
+---
+
