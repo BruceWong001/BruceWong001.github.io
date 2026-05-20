@@ -2,7 +2,7 @@
 layout:     post
 title:      GitHub Copilot CLI：实现一个idea总共需要几步？
 subtitle:   Copilot CLI（2）
-date:       2026-05-20
+date:       2026-05-19
 author:     Bruce Wong
 header-img: img/copilot_cli.webp
 catalog: true
