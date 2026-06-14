@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      Microsoft IQ 与企业级 Context Engineering：四层上下文解析
-subtitle:   Microsoft Foundry 系列（四）
+subtitle:   Microsoft Foundry 系列(4)
 date:       2026-06-14
 author:     Bruce Wong
 header-img: img/IMG_1513.WEBP
@@ -22,17 +22,6 @@ tags:
 - **Fabric IQ**：理解业务数据和业务实体。
 - **Foundry IQ**：理解企业知识、政策和权威文档。
 - **Web IQ**：理解外部世界的新鲜信息。
-
-> 截至 2026 年 6 月，部分 IQ 能力仍处于 preview 或逐步 GA 阶段，具体可用性以官方文档为准。
-
-```mermaid
-flowchart TB
-    A[Agent / Copilot] --> B[Work IQ<br/>人是怎么工作的]
-    A --> C[Fabric IQ<br/>业务当前是什么状态]
-    A --> D[Foundry IQ<br/>企业知识在哪里]
-    A --> E[Web IQ<br/>外部世界在发生什么]
-    style A fill:#f9f,stroke:#333
-```
 
 ## 四层上下文分别解决什么问题？
 
