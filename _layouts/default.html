@@ -16,7 +16,10 @@
 <!-- Image to hack wechat -->
 <img src="/img/apple-touch-icon.png" width="0" height="0" />
 <!-- Migrate from head to bottom, no longer block render and still work -->
-
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true });
+</script>
 </body>
 
 </html>
