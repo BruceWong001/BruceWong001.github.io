@@ -100,6 +100,8 @@ Work IQ 使用 Microsoft Entra ID delegated authentication，请求运行在 sig
 
 > 注：Work IQ 服务及 Work IQ MCP APIs 已于 2026 年 6 月 GA；Microsoft Foundry Agent Service 及 Foundry 工具目录核心框架也已 GA。但 Microsoft Foundry 中的 `work_iq_preview` 内置工具集成、Foundry MCP Server 云端托管版以及工具目录中的部分工具（如 Browser Automation、Computer Use 等）仍处于 public preview。本文基于 2026 年 6 月的公开文档，具体 UI、工具列表和实现细节可能随时间变化。
 
+**理解 AI，用好 AI，让 AI 帮助自我进化，加油。**
+
 ## 相关链接
 
 - [Work IQ overview](https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/work-iq/)
