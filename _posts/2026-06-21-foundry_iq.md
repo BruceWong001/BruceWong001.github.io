@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      如何用Foundry IQ为 Foundry Agent 构建多源 RAG 知识库
+title:      如何用Foundry IQ为 Foundry Agent 构建企业级多源 RAG 知识库
 subtitle:   Microsoft Foundry 系列(6)
 date:       2026-06-21
 author:     Bruce Wong
