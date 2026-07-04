@@ -120,4 +120,3 @@ Foundry IQ 并没有推翻 RAG，而是把越来越复杂的“检索编排”�
 8. Microsoft Learn：[Agentic retrieval limits](https://learn.microsoft.com/en-us/azure/search/search-limits-quotas-capacity#agentic-retrieval-limits)
 9. Microsoft Tech Community：[Foundry IQ: Boost response relevance by 36% with agentic retrieval](https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/foundry-iq-boost-response-relevance-by-36-with-agentic-retrieval/4470720)
 10. Microsoft Learn：[Foundry IQ FAQ](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/foundry-iq-faq)
-
