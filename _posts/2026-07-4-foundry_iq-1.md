@@ -26,9 +26,9 @@ tags:
 - Azure 门户中的 **Foundry IQ（Azure AI Search）** 偏底层资源管理，包括 Search Service、索引、索引器、Knowledge Source、Knowledge Base 和 agentic retrieval。
 - Microsoft Foundry 项目中的 **Knowledge（Foundry IQ）** 偏 Agent 开发体验，用于创建、配置和连接 Knowledge Base。
 
-两边最终操作的 Knowledge Base 和 Knowledge Source 都托管在选定的 Azure AI Search Resource 中。如果 Search Endpoint（例如 `https://my-search-service.search.windows.net`）和 Knowledge Base 名称相同，看到的就是同一个底层知识库。[1][2]
+两边最终操作的 Knowledge Base 和 Knowledge Source 都托管在选定的 Azure AI Search Resource 中。如果 Search Endpoint（例如 `https://my-search-service.search.windows.net`）和 Knowledge Base 名称相同，看到的就是同一个底层知识库。
 
-部分产品与定价页面会显示 **Foundry IQ（Azure AI Search）**，但这不等于所有 Azure AI Search 技术名称都已被替换。官方技术文档仍将 Azure AI Search 定义为 Foundry IQ 的底层索引与检索基础设施；Index、Indexer、Skillset、Vector Search 和 Search API 也继续沿用 Azure AI Search 名称。[1][3]
+部分产品与定价页面会显示 **Foundry IQ（Azure AI Search）**，但这不等于所有 Azure AI Search 技术名称都已被替换。官方技术文档仍将 Azure AI Search 定义为 Foundry IQ 的底层索引与检索基础设施；Index、Indexer、Skillset、Vector Search 和 Search API 也继续沿用 Azure AI Search 名称。
 
 ```text
 Microsoft Foundry
@@ -46,11 +46,11 @@ Microsoft Foundry
 
 ![在 Microsoft Foundry 中配置 Knowledge Base](/img/foundry/foundry-knowledge.png)
 
-截图中的 Chat Completions Model 属于 **Knowledge Base 的检索管线**。它不是生成向量的 Embedding Model，也不一定是 Agent 的主模型。目前用于 query planning 的 LLM 仅限 **gpt-4o、gpt-4.1 和 gpt-5 系列**的 Azure OpenAI 部署，具体列表见官方文档。[2][3] 它主要承担三项工作：[2][3]
+截图中的 Chat Completions Model 属于 **Knowledge Base 的检索管线**。它不是生成向量的 Embedding Model，也不一定是 Agent 的主模型。目前用于 query planning 的 LLM 仅限 **gpt-4o、gpt-4.1 和 gpt-5 系列**的 Azure OpenAI 部署，具体列表见官方文档。它主要承担三项工作：
 
 1. **查询规划**：结合用户问题和对话历史，把复合问题拆成更聚焦的子查询。
 2. **查询与知识源规划**：判断应该查询哪些来源并生成子查询；随后由 Azure AI Search 执行关键词、向量或混合检索与语义重排。
-3. **可选的答案合成**：当 Output Mode 为 `Answer synthesis` 时，将证据合成为带引用的答案；使用 `Extracted data` 时，则把检索内容和来源交给 Agent 生成最终回答。[2][4]
+3. **可选的答案合成**：当 Output Mode 为 `Answer synthesis` 时，将证据合成为带引用的答案；使用 `Extracted data` 时，则把检索内容和来源交给 Agent 生成最终回答。
 
 `Retrieval reasoning effort` 控制 LLM 介入检索的程度，并直接决定可用资源上限：[5]
 
@@ -60,17 +60,17 @@ Microsoft Foundry
 | `Low` | 一轮查询规划和知识源选择，默认模式 | 最多 3 个 sources / 3 个子查询；答案合成预算 5,000 tokens | 大多数场景的起点 |
 | `Medium` | 首轮结果不足时可修订查询并再检索一次 | 最多 5 个 sources / 5 个子查询；答案合成预算 10,000 tokens | 复杂、跨来源、重视完整性的任务 |
 
-推理强度越高，通常检索覆盖更好，但延迟与 token 成本也会上升。具体限额可参考 [Agentic retrieval limits][8]。
+推理强度越高，通常检索覆盖更好，但延迟与 token 成本也会上升。具体限额可参考 [Agentic retrieval limits]。
 
-另外，Web 等远程 knowledge source 必须启用 `Answer synthesis` 才能返回结果，因此 `Minimal` 模式（无答案合成）天然不支持 Web 源。[10]
+另外，Web 等远程 knowledge source 必须启用 `Answer synthesis` 才能返回结果，因此 `Minimal` 模式（无答案合成）天然不支持 Web 源。
 
-这里还要区分两个模型角色：**Knowledge Base 的 LLM 优化“如何找到证据”，Agent 的 LLM 负责“如何完成任务”。** 两者可以使用相同部署，也可以不同。对于还要调用其他工具并统一组织答案的 Foundry Agent，官方建议优先使用 `Extracted data`，把原始证据和引用交给 Agent 推理，避免知识库和 Agent 重复生成答案；只有在检索结果直接面向终端用户、不需要 Agent 二次加工的场景，才更适合使用 `Answer synthesis`。[3][4]
+这里还要区分两个模型角色：**Knowledge Base 的 LLM 优化“如何找到证据”，Agent 的 LLM 负责“如何完成任务”。** 两者可以使用相同部署，也可以不同。对于还要调用其他工具并统一组织答案的 Foundry Agent，官方建议优先使用 `Extracted data`，把原始证据和引用交给 Agent 推理，避免知识库和 Agent 重复生成答案；只有在检索结果直接面向终端用户、不需要 Agent 二次加工的场景，才更适合使用 `Answer synthesis`。
 
 ## 为什么 Blob Knowledge Source 也要配置模型？
 
 ![配置 Azure Blob Knowledge Source](/img/foundry/azure%20blob.png)
 
-Blob 页面与 Knowledge Base 页面虽然都有 Chat Completions Model，但它们工作在 RAG 的不同阶段：[7]
+Blob 页面与 Knowledge Base 页面虽然都有 Chat Completions Model，但它们工作在 RAG 的不同阶段：
 
 | 模型 | 运行阶段 | 作用 |
 |---|---|---|
@@ -78,13 +78,13 @@ Blob 页面与 Knowledge Base 页面虽然都有 Chat Completions Model，但它
 | Blob 的 Embedding Model | 建索引及向量查询时 | 将文档分块和用户查询转换成向量，用于语义相似度检索 |
 | Knowledge Base 的 Chat Model | 每次用户检索时 | 理解问题、拆分子查询、选择知识源，以及可选的答案合成 |
 
-创建 Blob Knowledge Source 时，系统会自动生成 Data Source、Indexer、Skillset 和 Search Index。截图中的 `Content extraction mode = Standard` 使用 Azure Content Understanding 做高级文档解析与分块；启用图片描述时，Blob Chat Model 会被生成的 GenAI Prompt Skill 用于把图片等视觉信息转成文本；Embedding Model 则通过 Embedding Skill 和 Vectorizer 分别服务于索引与查询。[7]
+创建 Blob Knowledge Source 时，系统会自动生成 Data Source、Indexer、Skillset 和 Search Index。截图中的 `Content extraction mode = Standard` 使用 Azure Content Understanding 做高级文档解析与分块；启用图片描述时，Blob Chat Model 会被生成的 GenAI Prompt Skill 用于把图片等视觉信息转成文本；Embedding Model 则通过 Embedding Skill 和 Vectorizer 分别服务于索引与查询。
 
 ## 与 Agent 直接连接 Azure AI Search 有什么不同？
 
-传统 RAG 通常让 Agent 直接连接一个 Search Index，配置查询类型、`top_k` 和过滤条件；Search 返回文档片段，再由 Agent 主模型作答。这种方式路径短、控制直接，适合单索引和稳定查询。[6]
+传统 RAG 通常让 Agent 直接连接一个 Search Index，配置查询类型、`top_k` 和过滤条件；Search 返回文档片段，再由 Agent 主模型作答。这种方式路径短、控制直接，适合单索引和稳定查询。
 
-需要说明的是，Knowledge Base 并非只能被 Foundry Agent Service 调用。任何支持 Azure AI Search knowledge base API 的应用、Microsoft Agent Framework 或自建服务都可以调用它；Foundry Agent Service 只是提供了原生集成和托管体验。[1]
+需要说明的是，Knowledge Base 并非只能被 Foundry Agent Service 调用。任何支持 Azure AI Search knowledge base API 的应用、Microsoft Agent Framework 或自建服务都可以调用它；Foundry Agent Service 只是提供了原生集成和托管体验。
 
 Foundry IQ 并没有推翻 RAG，而是把越来越复杂的“检索编排”从每个 Agent 中抽离出来：
 
@@ -96,14 +96,12 @@ Foundry IQ 并没有推翻 RAG，而是把越来越复杂的“检索编排”�
 | 检索配置分散在各个 Agent 中 | 一个领域知识库可被多个 Agent 共享和独立更新 |
 | 成本和延迟更容易预测 | 复杂问题效果可能更好，但会增加模型调用和延迟 |
 
-其核心价值是**关注点分离**：Azure AI Search 负责检索执行，Knowledge Base 负责领域知识与检索策略，Agent 负责对话、工具调用和业务行动。官方基准显示，agentic retrieval 在响应质量上比传统单次 RAG 高约 36%。[9]
+其核心价值是**关注点分离**：Azure AI Search 负责检索执行，Knowledge Base 负责领域知识与检索策略，Agent 负责对话、工具调用和业务行动。官方基准显示，agentic retrieval 在响应质量上比传统单次 RAG 高约 36%。
 
 ## 如何选择？
 
 - 只有一个成熟索引、问题简单、强调精确控制与低延迟：继续直接使用 Azure AI Search Tool。
 - 需要跨来源回答复合问题、理解对话上下文，或让多个 Agent 共享同一领域知识：优先考虑 Foundry IQ。
-- 生产落地前，用真实问题同时评测答案正确率、引用质量、P95 延迟和单次成本，再决定采用 `Minimal`、`Low`、`Medium` 或直接 Search Tool。
-- 演示可以使用 API Key；生产环境优先使用 Microsoft Entra ID、Managed Identity 和最小权限 RBAC。使用 Web 等远程知识源时，还要检查数据边界、许可与合规条款。若使用 Remote SharePoint knowledge source，终端用户需持有有效的 Microsoft 365 Copilot license。[7][10]
 
 最终可以这样理解：
 
