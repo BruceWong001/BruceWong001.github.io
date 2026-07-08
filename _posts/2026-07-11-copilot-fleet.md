@@ -1,387 +1,157 @@
 ---
 layout:     post
-title:      Foundry IQ 易混淆功能解读
-subtitle:   Microsoft Foundry 系列(8)
-date:       2026-07-11
+title:      从一个 Agent 到一支 AI 开发团队：GitHub Copilot CLI '/fleet' 实战
+subtitle:
+date:       2026-07-08
 author:     Bruce Wong
 header-img: img/IMG_1189.webp
 catalog: true
 tags:
-    - 技术解析
-    - Microsoft Foundry
+    - AI Coding
+    - Copilot
     - AI
 ---
 
-VS Code 有 Agent Mode、Subagent 和新的 Agents window，Copilot CLI 又有 `/fleet`。这些名称看起来都在做“多 Agent”，但它们并不处于同一个层级。本文从使用者视角厘清它们的关系，并回答一个最实际的问题：面对同一个任务，到底应该留在 VS Code，还是打开 Copilot CLI？
+过去使用 Coding Agent，通常是把任务交给一个 Agent：读需求、改代码、跑测试，再给出结果。面对同时涉及后端、前端、测试和文档的完整需求时，它仍要沿一条时间线逐项执行。
+
+GitHub Copilot CLI 的 `/fleet` 改变的不只是“同时多开几个 Agent”。主 Agent 会转为编排者：分析目标、拆分任务、识别依赖，把当前可执行的工作交给多个 subagent 并行处理，最后汇总和验证结果。GitHub 对它的官方定义也是：将复杂请求拆成较小任务并并行运行，以提升效率和吞吐量。[GitHub Docs：Running tasks in parallel with `/fleet`](https://docs.github.com/en/copilot/concepts/agents/copilot-cli/fleet)
+
+## 视频里发生了什么
+---
+<iframe
+  src="//player.bilibili.com/player.html?bvid=BV1WoMG6wEvn&cid=39767576050&p=1"
+  width="100%"
+  height="500"
+  frameborder="0"
+  allowfullscreen
+  title="用 /fleet 并行构建 FeedHub RSS 阅读器">
+</iframe>
 
 ---
+演示目标是从 PRD 和架构文档出发，构建一个 FeedHub RSS 阅读器：后端使用 FastAPI + SQLite，前端使用 React + TypeScript。
 
-## 一、先说结论
+视频没有直接运行 `/fleet`，而是先进入 Plan 模式。Copilot 阅读 PRD、Architecture 和 Roadmap 后，将工程拆成 22 个任务，建立 30 条依赖关系：后端 scaffold、model、schema 是 discovery、parser 和 router 的前置任务；前端 scaffold 可以与后端基础设施并行；API 和 hooks 完成后，layout、feed、article、toolbar 等组件才能展开；搜索、OPML、测试和文档则位于更靠后的层级。
 
-VS Code Subagent 和 Copilot CLI `/fleet` **不是两套完全无关的技术，也不是同一个功能换了一个界面**。
-
-它们共享相似的多代理工作模式：
-
-1. 一个主代理理解整体目标
-2. 主代理把部分工作交给多个子代理
-3. 子代理使用独立上下文完成各自任务
-4. 子代理把结果返回给主代理
-5. 主代理汇总、验证并继续推进
-
-但它们的产品入口和编排方式不同：
-
-- **VS Code Subagent**：主代理在工作过程中按需调用子代理，重点是上下文隔离和灵活委派。
-- **Copilot CLI `/fleet`**：用户显式启动并行模式，由 CLI 将计划拆成任务并调度多个子代理，重点是批量执行和任务状态管理。
-- **VS Code Agent Mode**：让一个主代理在编辑器里自主读代码、修改文件和运行命令；它本身不等于多代理，但主代理可以进一步调用 Subagent。
-- **VS Code Agents window**：管理和观察多个 Agent 会话的 UI；它甚至可以承载 Copilot CLI 会话，因此“使用 VS Code UI”和“使用 Copilot CLI runtime”并不总是二选一。
-
-最简单的选择原则是：
-
-> 需要贴着代码交互、随时调整方向，优先 VS Code；已经有清晰计划，需要把独立任务批量并行执行，优先 Copilot CLI `/fleet`。
-
----
-
-## 二、为什么这些名字容易混淆？
-
-因为我们常把三个不同维度混在一起：
-
-| 维度 | 它回答的问题 | 例子 |
-|------|--------------|------|
-| **交互界面** | 我在哪里查看和控制 Agent？ | VS Code Chat view、Agents window、CLI 终端 |
-| **代理运行方式** | Agent 在哪里、以什么方式运行？ | VS Code local agent、Copilot CLI、cloud agent |
-| **编排方式** | 一个任务如何交给多个 Agent？ | Subagent 委派、CLI `/fleet`、多个独立会话 |
-
-这三个维度可以组合。
-
-例如，你可以：
-
-- 在 VS Code Chat view 中使用本地 Agent，并让它调用多个 Subagent
-- 在终端中运行 Copilot CLI，然后使用 `/fleet`
-- 在 VS Code Agents window 中启动或查看 Copilot CLI 会话
-- 在 Agents window 中同时管理不同 workspace 的多个独立会话
-
-因此，“VS Code 还是 CLI”有时是在选择交互体验，有时是在选择运行时和编排能力。先分清问题属于哪个维度，很多困惑会自然消失。
-
----
-
-## 三、四个概念分别是什么？
-
-### 3.1 VS Code Agent Mode：一个主代理自主完成任务
-
-在 VS Code Chat view 中选择 Agent 后，主代理可以围绕一个目标反复执行：
+确认计划后，视频输入：
 
 ```text
-理解需求
-  ↓
-读取与搜索代码
-  ↓
-修改文件、运行命令
-  ↓
-检查结果并继续修正
-  ↓
-返回最终结果
+/fleet please follow up the plan to implement
 ```
 
-这通常被称为 Agent Mode。它强调的是 **Agent 可以使用工具自主执行多步任务**，并不意味着每次都会启动多个 Agent。
+Fleet 首先找到两个没有前置依赖的起点：`backend-scaffold` 和 `frontend-scaffold`，将它们并行派发给后台 subagent。随着任务完成，新的工作被逐批解锁。这不是把 22 个任务同时启动，而是“能并行的并行，有依赖的等待，完成一层再调度下一层”。
 
-适合它的场景包括：
+最后，主 Agent 收回各分支结果，运行完整后端测试和前端构建。录屏中共有 41 个后端测试通过，前端成功构建，并生成了完整的项目结构与实现说明。
 
-- 需求还不完全清楚，需要边讨论边实现
-- 需要利用当前编辑器中的文件、选区、错误和测试结果
-- 希望随时查看改动并调整方向
-- 需要使用 VS Code 扩展提供的工具或 MCP server
+## `/fleet` 如何工作
 
-### 3.2 VS Code Subagent：主代理按需委派
+按照 GitHub 官方说明，Fleet 会：
 
-当主代理认为某个子任务适合隔离处理时，可以调用 `agent/runSubagent`：
+1. 将目标拆成带依赖的独立工作项；
+2. 判断哪些可并行、哪些必须等待；
+3. 派发后台 subagent；
+4. 轮询结果并调度下一批任务；
+5. 验证输出并合成最终结果。
+
+每个 subagent 有独立的上下文窗口，但共享同一个文件系统；subagent 之间不能直接交流，只能由主 Agent 协调。[GitHub Blog：Run multiple agents at once with `/fleet`](https://github.blog/ai-and-ml/github-copilot/run-multiple-agents-at-once-with-fleet-in-copilot-cli/)
+
+因此，Fleet 的价值不取决于 Agent 数量，而取决于任务依赖图中有没有足够宽的“并行层”。例如，前后端可以同步搭建，但依赖 schema 的 router 必须等待；不同 UI 组件可以并行，但统一页面组装应放在它们之后。
+
+独立上下文也能让负责 parser 的 Agent 专注 RSS 解析，让负责 layout 的 Agent 只加载 UI 所需信息，减少无关上下文干扰。
+
+### 真正的瓶颈是任务图，而不是模型速度
+
+把一个十小时的串行任务交给十个 Agent，并不会自动缩短到一小时。如果十个步骤首尾依赖，后一个必须等待前一个产出，Fleet 仍只能串行推进。真正适合并行的计划，通常具备三类结构：
+
+- **按技术层拆分**：前端、后端、基础设施在接口确定后分别推进；
+- **按模块拆分**：多个相互独立的包、页面或服务各有明确所有者；
+- **按工作类型拆分**：实现、测试、文档可以在输入稳定后分轨完成。
+
+拆分时还要警惕“看起来独立，实际共享状态”。例如多个 Agent 分别开发页面，却都需要修改同一个路由入口；后端和前端同步开发，却没有先固定字段名称和错误响应。好的计划会把这类协调点提取成前置任务：先确定 API contract、公共类型和目录结构，再展开并行工作。视频中 Copilot 识别出前后端唯一的主要协调点是 schema 定义的 API contract，这正是后续多条工作线能够安全展开的基础。
+
+主 Agent 的职责也不只是派活，还要持续检查状态、读取结果、判断依赖是否满足，并在最后做跨模块验证。
+
+## 为什么建议先 Plan，再 Fleet
+
+虽然可以直接输入 `/fleet <目标>`，复杂工程更适合先 Plan、后 Fleet。Plan 的作用不是生成一份漂亮清单，而是提前确认：交付物是否具体、任务是否真正独立、依赖是否合理、最终由谁集成和验收。
+
+GitHub 官方推荐的典型流程也是：按 `Shift+Tab` 进入 Plan 模式，完成实现计划后选择 Autopilot + `/fleet`，或退出 Plan 再输入 `/fleet implement the plan`。[GitHub Docs：Speeding up task completion](https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/speed-up-task-completion)
+
+这里需要区分：
+
+- `/fleet` 解决“谁能同时做什么”，核心是并行编排；
+- Autopilot 解决“是否需要用户逐步确认”，核心是持续自主执行。
+
+两者可以组合，也能独立使用。视频是在 Autopilot 下启动 Fleet，因此主 Agent 可以持续派发后续工作。
+
+## 怎样写好 Fleet Prompt
+
+一句“帮我把项目做完”很难形成有效并行。更可靠的 Prompt 应明确四件事：交付物、文件边界、依赖关系、验收标准。
 
 ```text
-用户
-  ↓
-VS Code 主代理
-  ├── Subagent A：分析安全风险 ──┐
-  ├── Subagent B：分析性能问题 ──┼── 返回各自结果
-  └── Subagent C：分析测试缺口 ──┘
-  ↓
-主代理综合结论
+/fleet Implement FeedHub according to docs/PRD_2026_6.md.
+
+Tracks:
+1. Backend owns backend/app/** and backend/tests/**.
+2. Data layer owns frontend/src/api/** and frontend/src/hooks/**.
+3. UI owns frontend/src/components/** after hooks are ready.
+4. Docs are updated after implementation and validation.
+
+Constraints:
+- Do not modify files outside each assigned area.
+- Preserve the frontend/backend API contract.
+
+Done means:
+- Backend tests pass.
+- Frontend type-check and production build pass.
+- Report changed files, validation results and remaining risks.
 ```
 
-每个 Subagent 有独立上下文，只把最终结果返回主代理，避免把大量搜索过程和中间信息塞进主会话。多个 Subagent 也可以并行运行。
+如果项目已有 PRD、`.github/copilot-instructions.md`、`.github/agents/<name>.md` 或架构文档，应让 subagent 明确读取它们。subagent 看不到主 Agent 的完整对话历史，派发给它的任务必须自包含，或引用可读取的上下文文件。GitHub 官方也强调，应把工作映射到具体文件或测试，并写清边界、限制和验证条件；目标过于模糊，执行很可能退化为串行。[GitHub Blog：Write prompts that parallelize well](https://github.blog/ai-and-ml/github-copilot/run-multiple-agents-at-once-with-fleet-in-copilot-cli/#write-prompts-that-parallelize-well)
 
-Subagent 通常由主代理自主触发，但用户可以在 prompt 中明确要求并行分析：
+“实现功能”只描述了动作，没有定义可验证结果。完成标准应具体到新增文件、必过命令、需验证的用户路径和待报告的风险，避免各 subagent 对“完成”产生分歧。
 
-```markdown
-请并行运行三个 subagent：
-1. 检查身份验证相关的安全风险
-2. 检查错误处理的一致性
-3. 检查单元测试覆盖缺口
+## 最大风险：多个 Agent 同时写一个文件
 
-最后将结果合并成一份按优先级排序的报告。
-```
+subagent 共享文件系统，但没有文件锁。如果两个 Agent 同时修改一个文件，后完成的一方可能静默覆盖先前结果，并不会自动出现合并冲突提示。[GitHub Blog：Avoiding common pitfalls](https://github.blog/ai-and-ml/github-copilot/run-multiple-agents-at-once-with-fleet-in-copilot-cli/#avoiding-common-pitfalls)
 
-Subagent 还可以使用 Custom Agent 中定义的专用指令、工具和模型。默认情况下，Subagent 不能继续创建下一层 Subagent；VS Code 可以通过设置允许嵌套，最大深度为 5。
+因此最好遵守“单一文件所有者”原则：按目录或文件划分责任，把 `README.md`、路由注册表、依赖清单等公共文件留给主 Agent 统一集成。视频中的前后端适合并行，正是因为目录边界清晰，协调点集中在 API contract，没有争抢核心文件。
 
-### 3.3 Copilot CLI `/fleet`：显式启动批量并行编排
+## 如何观察和干预
 
-`/fleet` 是 Copilot CLI 的交互命令。用户明确告诉 CLI：“请考虑把这个任务交给多个子代理并行完成。”
+使用 `/tasks` 可以查看本会话的后台任务。当前官方文档中的操作是：方向键选择、`Enter` 查看详情、`k` 终止任务、`r` 清理任务、`Esc` 返回。[GitHub Docs：Monitoring progress](https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/speed-up-task-completion#monitoring-progress)
 
-```bash
-/fleet Refactor each SDK package independently, run its tests, and summarize the changes
-```
+录屏版本显示的是 `x kill`，与当前文档不同。CLI 快捷键可能随版本变化，应以本机界面和 `/help` 为准。执行过程中也可以继续指挥主 Agent，例如要求优先处理失败测试、列出活跃 subagent，或规定只有 lint、类型检查和测试全部通过才能标记完成。
 
-需要注意：用户显式触发了 `/fleet`，但并不代表用户必须亲自完成所有任务拆分。主代理仍会分析 prompt、判断哪些工作可以并行，并负责调度 Subagent。
+观察 Fleet 时可以检查三个信号：计划是否被拆成多条工作线；任务面板是否同时出现多个后台 subagent；进度更新是否来自不同模块。如果只有一条长任务持续运行，通常说明目标太模糊、文件边界重叠或依赖声明过重。此时与其盲目增加 Agent，不如暂停并要求主 Agent 先重新拆分独立 tracks，逐项报告所有者、输入、输出和阻塞条件。
 
-Fleet 使用显式任务状态协调工作。可以把它简化理解为：
+## 什么时候不该使用 `/fleet`
 
-```text
-总体目标
-  ↓
-主代理生成任务列表
-  ├── todo-1：重构 auth package  ── Worker A
-  ├── todo-2：重构 api package   ── Worker B
-  └── todo-3：重构 utils package ── Worker C
-  ↓
-跟踪 pending / in_progress / done / blocked
-  ↓
-父会话汇总并验证结果
-```
+视频结尾有个很好的反例：应用生成后，实际运行发现“添加网站 URL 时无法输入”。问题最终定位到 `AddFeedModal.tsx` 中 effect 的依赖项导致状态被反复重置。它目标集中、修改范围小、调查路径基本串行，交给普通单 Agent 更合适。
 
-Fleet 可以跟踪任务依赖，但依赖越多，可并行的部分就越少。它最适合可以预先拆分、文件所有权明确、相互等待较少的任务。
+Fleet 适合跨模块重构、API/UI/测试并行开发、多份独立文档更新、多个包或服务的批量处理。严格串行、集中在单文件、强共享状态或规模很小的任务，普通 Copilot CLI 通常更简单。Fleet 本身有协调成本，只有存在真实可分配的并行工作时才值得使用。[GitHub Blog：When to use `/fleet`](https://github.blog/ai-and-ml/github-copilot/run-multiple-agents-at-once-with-fleet-in-copilot-cli/#when-to-use-fleet-and-when-not-to)
 
-### 3.4 VS Code Agents window：多会话控制台
+更多 subagent 也意味着更多独立模型交互，可能消耗更多 GitHub AI Credits。录屏中的 AIC 只代表本次会话，不能作为其他项目的固定基准；任务规模、模型、重试次数和 Prompt 质量都会影响消耗。[GitHub Docs：Points to consider](https://docs.github.com/en/copilot/concepts/agents/copilot-cli/fleet#points-to-consider)
 
-Agents window 是 VS Code 提供的 agent-first UI。它与传统 Chat view 的侧重点不同：
+## 最后
 
-- **Chat view** 是 code-first：围绕当前打开的 workspace 和代码工作
-- **Agents window** 是 agent-first：跨 workspace 创建、查看和管理多个 Agent 会话
+真实项目中，可以从一个有 3～5 条自然工作线的任务开始：
 
-Agents window 可以管理 Copilot CLI、Copilot cloud 和部分第三方 Agent 会话。它解决的是“如何同时观察多个会话”，而不是定义一种新的 Subagent 编排算法。
+1. 先让 Plan 列出任务、依赖、文件所有者和预期产物；
+2. 人工检查并行任务是否会修改同一文件，公共接口是否已经固定；
+3. 在 Fleet Prompt 中写明禁止修改范围和依赖顺序；
+4. 把单元测试、类型检查、构建和 smoke test 设为统一质量门禁；
+5. 通过 `/tasks` 检查是否真的形成并行，而不是只生成了更长的计划；
+6. 结束后检查 diff、运行产品，并重点验证跨模块连接处。
 
-这里还要区分两种并行：
+这里最后一步不能省略。subagent 可以分别证明自己的局部任务完成，却未必能发现组合后的交互问题；单元测试也可能覆盖业务逻辑，却遗漏焦点、输入、响应式布局等真实体验。视频结尾发现输入框问题，正说明最终验收应从“代码是否生成”走到“用户是否能完成关键路径”。
 
-- **多个独立会话并行**：你分别启动多个顶层任务，每个会话有自己的目标
-- **一个会话内部的 Subagent 并行**：主代理为了同一个目标委派多个子任务
+FeedHub 演示既展示了 Fleet 的能力，也说明了它的边界：多 Agent 可以快速完成从后端、前端到测试文档的多线工作，但“构建成功、测试通过”不等于产品体验没有问题。
 
-两者都叫“多 Agent”，但管理边界和结果汇总方式不同。
+`/fleet` 的意义不是让开发者退出流程，而是让我们从逐项执行者转变为任务设计者和质量负责人。从一个 Agent 到一支 AI 开发团队，关键不是拥有更多 Agent，而是学会组织它们。
 
----
+## 参考资料
 
-## 四、底层技术是一样的吗？
-
-准确答案是：**概念模型相似，产品实现和公开的编排接口不同；不能据此断言它们使用完全相同的内部代码。**
-
-### 相同点
-
-| 能力 | VS Code Subagent | CLI `/fleet` |
-|------|------------------|--------------|
-| 主代理负责整体目标 | ✅ | ✅ |
-| 子代理独立上下文 | ✅ | ✅ |
-| 支持多个子代理并行 | ✅ | ✅ |
-| 子代理返回结果给父会话 | ✅ | ✅ |
-| 支持 Custom Agent | ✅ | ✅ |
-| 可以为子任务选择模型 | ✅ | ✅ |
-
-### 不同点
-
-| 维度 | VS Code Subagent | Copilot CLI `/fleet` |
-|------|------------------|----------------------|
-| **入口** | Agent 在对话中调用 `runSubagent` | 用户显式输入 `/fleet`，或从 Plan Mode 选择 Fleet |
-| **主要目的** | 隔离上下文、灵活委派研究和分析 | 将清晰计划拆成独立工作项并批量调度 |
-| **调度模型** | 主代理发起一个或多个 Subagent 调用 | 父会话维护 todo、状态和依赖并调度 worker |
-| **用户观察方式** | Chat 中的可折叠 Subagent 工具调用 | 终端输出及 `/tasks` 后台任务列表 |
-| **嵌套** | 默认关闭，可配置最多 5 层 | 不应与 todo 依赖链混为一谈 |
-| **环境优势** | 编辑器上下文、VS Code 工具和扩展 | 终端工作流、显式批量执行和后台任务管理 |
-
-所以更准确的说法不是“两个完全不同的多 Agent 系统”，而是：
-
-> 它们采用相似的主代理—子代理模式，但通过不同产品入口和不同调度方式服务不同的交互习惯。
-
----
-
-## 五、同一个任务，在两种入口中有什么不同？
-
-假设任务是：检查一个项目的安全、性能、测试和代码质量问题。
-
-### 使用 VS Code
-
-```markdown
-请分析当前项目，并行运行四个 subagent，分别检查：
-1. 安全风险
-2. 性能瓶颈
-3. 测试覆盖缺口
-4. 代码质量问题
-
-先只输出综合报告，不修改代码。
-```
-
-你的体验会更像与 Tech Lead 协作：主代理决定如何调用 Subagent，你可以在 Chat 中展开每个调用、查看结果，然后继续追问或选择要修复的问题。
-
-### 使用 Copilot CLI
-
-```bash
-/fleet Review security, performance, test coverage, and code quality in parallel. Do not modify files. Summarize findings by severity.
-```
-
-你的体验更像启动一批工作：CLI 将工作交给后台 Subagent，你可以通过 `/tasks` 查看任务、进入某个任务看详情或终止任务，最后由父会话汇总。
-
-在这个只读分析案例里，两种方式都合理。真正决定选择的通常不是“谁的模型更聪明”，而是你希望怎样参与过程：
-
-- 希望边看代码边讨论：VS Code 更顺手
-- 希望发出一个清晰批量任务后在终端观察：CLI `/fleet` 更顺手
-
----
-
-## 六、到底应该选哪个？
-
-### 优先 VS Code Agent Mode + Subagent
-
-当你符合以下情况：
-
-- 日常工作本来就在 VS Code 中
-- 任务仍有模糊之处，需要频繁补充上下文
-- 需要根据编辑器诊断、选中代码或测试结果即时调整
-- 主要目标是研究、评审、探索多个方案
-- 希望以可折叠 UI 查看 Subagent 的 prompt、工具调用和结果
-
-### 优先 Copilot CLI `/fleet`
-
-当你符合以下情况：
-
-- 日常工作偏向终端
-- 已经有经过确认的实施计划
-- 任务能拆成多个边界清晰、互不冲突的工作项
-- 希望显式启动批量并行，并使用 `/tasks` 查看后台任务
-- 例如每个 worker 分别负责一个 package、module 或独立评审范围
-
-### 优先 VS Code Agents window
-
-当你的主要问题不是“一个任务如何拆分”，而是：
-
-- 想同时跟踪多个顶层任务或多个 workspace
-- 想在一个 UI 中管理 Copilot CLI、cloud agent 等不同会话
-- 想在 agent-first 与 code-first 工作方式之间切换
-
-### 两者都不该用
-
-以下情况不要为了“多 Agent”而并行：
-
-- 一个 Agent 很快就能完成的小任务
-- 后一步必须持续依赖前一步具体输出的强顺序任务
-- 多个 worker 会频繁修改相同文件
-- 任务边界模糊，需要不断共享最新推理
-- 并行后的合并和评审成本可能超过节省的时间
-
----
-
-## 七、一个更实用的决策树
-
-```text
-你是在管理一个任务，还是多个独立会话？
-│
-├── 多个独立会话 / 多个 workspace
-│   └── VS Code Agents window 或 GitHub Mission Control
-│
-└── 一个复杂任务
-    │
-    ├── 任务很小、强顺序或会修改相同文件
-    │   └── 使用单 Agent
-    │
-    ├── 需要贴着代码交互、频繁调整
-    │   └── VS Code Agent Mode，需要时调用 Subagent
-    │
-    └── 已有清晰计划，可以拆成独立工作项
-        └── Copilot CLI `/fleet`
-```
-
-这不是硬性限制。VS Code Subagent 也能处理批量分析，`/fleet` 也能并行研究；决策树表达的是更自然的入口，而不是产品能力的绝对边界。
-
----
-
-## 八、常见误区
-
-### 误区 1：Agent Mode 就是多 Agent
-
-不是。Agent Mode 首先表示一个 Agent 能自主使用工具完成多步任务。只有当主代理进一步调用 Subagent 时，才形成会话内部的多代理协作。
-
-### 误区 2：`/fleet` 是另一种与 Subagent 无关的技术
-
-不是。`/fleet` 会把任务分配给多个 Subagent。区别在于它提供了更显式的批量并行入口和任务协调方式。
-
-### 误区 3：在 VS Code 中就不能使用 Copilot CLI
-
-不是。新的 Agents window 可以创建和管理 Copilot CLI 会话。UI、运行时和编排方式是可以组合的。
-
-### 误区 4：输入 `/fleet` 后，所有步骤都会并行
-
-不是。主代理仍会判断哪些工作适合交给 Subagent；存在依赖的任务可能等待，不能有效拆分的部分也未必并行。
-
-### 误区 5：并行一定更快、更省
-
-不是。并行有启动、协调、汇总和冲突处理成本；每个 Subagent 还会独立调用模型，可能消耗更多 GitHub AI Credits。准确说法是：**合适的独立任务可能缩短总等待时间。**
-
-### 误区 6：任务依赖等于 Subagent 嵌套
-
-不是。任务依赖表示 B 等待 A；Subagent 嵌套表示一个子代理继续创建下一层子代理。这是两个不同概念。
-
----
-
-## 九、多 Agent 真正重要的不是“开几个”，而是如何分工
-
-无论使用 VS Code 还是 `/fleet`，都建议遵守以下原则：
-
-1. **每个子任务有明确目标和交付物**
-2. **不同 worker 尽量不要修改重叠文件**
-3. **把必要上下文写进每个子任务，不要假设子代理知道主会话全部历史**
-4. **要求每个 worker 汇报修改内容、验证方式和阻塞项**
-5. **最终结果必须由主代理或人统一验证**
-
-一个好的并行 prompt 应明确：
-
-```markdown
-- 每个 worker 负责哪些文件或模块
-- 哪些文件禁止修改
-- 应运行哪些测试
-- 最终需要返回什么格式
-- 失败或不确定时如何报告
-```
-
-如果任务无法清楚回答这些问题，通常说明它还没有准备好进入 Fleet 或大规模并行执行。
-
----
-
-## 十、总结
-
-| 名称 | 它本质上是什么 | 什么时候优先使用 |
-|------|----------------|------------------|
-| **VS Code Agent Mode** | 一个主代理在编辑器中自主使用工具 | 贴着代码、交互式开发 |
-| **VS Code Subagent** | 主代理按需委派的上下文隔离能力 | 研究、分析、多视角评审 |
-| **Copilot CLI `/fleet`** | 基于多个 Subagent 的显式批量编排 | 计划清晰、边界独立的并行任务 |
-| **VS Code Agents window** | 跨 workspace 和 Agent 类型的会话管理 UI | 同时管理多个顶层会话 |
-
-它们不是简单的竞争关系：Agent Mode 负责“让主代理干活”，Subagent 负责“让主代理委派”，`/fleet` 负责“显式批量编排”，Agents window 负责“统一查看和管理会话”。
-
-真正的选择不是“哪个功能更高级”，而是：
-
-> 这个任务是否适合并行，以及你希望以多大的粒度参与、观察和控制它。
-
----
-
-## 官方参考资料
-
-1. **VS Code Agent 与界面**
-   - [Build with agents in VS Code](https://code.visualstudio.com/docs/agents/overview)
-   - [Local agents in Visual Studio Code](https://code.visualstudio.com/docs/agents/agent-types/local-agents)
-   - [Use the Agents window](https://code.visualstudio.com/docs/agents/agents-window)
-
-2. **VS Code Subagent**
-   - [Subagents in Visual Studio Code](https://code.visualstudio.com/docs/agents/subagents)
-   - [Agents concepts](https://code.visualstudio.com/docs/agents/concepts/agents)
-
-3. **Copilot CLI `/fleet`**
-   - [Running tasks in parallel with the `/fleet` command](https://docs.github.com/en/copilot/concepts/agents/copilot-cli/fleet)
-   - [Speeding up task completion with the `/fleet` command](https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/speed-up-task-completion)
-   - [Best practices for GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/cli-best-practices)
-
-4. **跨仓库和多会话编排**
-   - [How to orchestrate agents using mission control](https://github.blog/ai-and-ml/github-copilot/how-to-orchestrate-agents-using-mission-control/)
+- [GitHub Docs：`/fleet` 概念与注意事项](https://docs.github.com/en/copilot/concepts/agents/copilot-cli/fleet)
+- [GitHub Docs：使用 `/fleet` 加速任务](https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/speed-up-task-completion)
+- [GitHub Blog：`/fleet` 原理与实践](https://github.blog/ai-and-ml/github-copilot/run-multiple-agents-at-once-with-fleet-in-copilot-cli/)
 
