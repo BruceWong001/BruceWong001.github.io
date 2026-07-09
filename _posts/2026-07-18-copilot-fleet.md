@@ -366,6 +366,8 @@ Agents window 可以管理 Copilot CLI、Copilot cloud 和部分第三方 Agent 
 
 ---
 
+**You can outsource your thinking, but you cannot outsource your understanding.**
+
 ## 官方参考资料
 
 1. **VS Code Agent 与界面**

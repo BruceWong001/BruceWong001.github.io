@@ -149,6 +149,8 @@ FeedHub 演示既展示了 Fleet 的能力，也说明了它的边界：多 Agen
 
 `/fleet` 的意义不是让开发者退出流程，而是让我们从逐项执行者转变为任务设计者和质量负责人。从一个 Agent 到一支 AI 开发团队，关键不是拥有更多 Agent，而是学会组织它们。
 
+**You can outsource your thinking, but you cannot outsource your understanding.**
+
 ## 参考资料
 
 - [GitHub Docs：`/fleet` 概念与注意事项](https://docs.github.com/en/copilot/concepts/agents/copilot-cli/fleet)
