@@ -159,6 +159,7 @@ Agents window 是 VS Code 提供的 agent-first UI。它与传统 Chat view 的�
 真正重要的第一步不是判断哪个功能更强，而是先确认自己正在选择 UI、Agent runtime，还是 orchestration。
 
 下一篇将比较 VS Code Subagent 与 Copilot CLI `/fleet` 的默认模型、Custom Agent、嵌套、并发和隔离方式，并给出实际决策树。
+
 ---
 
 **You can outsource your thinking, but you cannot outsource your understanding.**
