@@ -1,7 +1,7 @@
 ---
 layout:     post
-title:       VS Code 多 Agent 名词地图：Local Agent、Subagent、/fleet 与 Agents window
-subtitle:
+title:      VS Code 多 Agent 名词地图：Local Agent、Subagent、/fleet 与 Agents window
+subtitle:   VS Code 与 Copilot CLI 多 Agent 工作方式指南
 date:       2026-07-18
 author:     Bruce Wong
 header-img: img/brett-jordan-M3cxjDNiLlQ-unsplash.jpg
