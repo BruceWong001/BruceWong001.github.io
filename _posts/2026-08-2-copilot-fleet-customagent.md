@@ -37,9 +37,9 @@ tags:
 视频定义了三个项目级 Custom Agents：后端工程师、前端工程师和只读 Reviewer。它们没有同时无序启动，而是按下面的任务图工作：
 
 ```text
-                     ┌─ @feedhub-backend ──┐
-固定接口与业务规则 ──┤                      ├─ @feedhub-reviewer ── 主 Agent 验收
-                     └─ @feedhub-frontend ─┘
+                  ┌─ @feedhub-backend ──┐
+固定接口与业务规则 ──┤                     ├─ @feedhub-reviewer ── 主 Agent 验收
+                  └─ @feedhub-frontend ─┘
 ```
 
 后端和前端拥有不同文件范围，可以并行；Reviewer 依赖两侧的集成结果，必须等待；最后的完整测试、构建和结果汇总仍由主 Agent 完成。
