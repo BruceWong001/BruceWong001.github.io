@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      Foundry Agent 身份治理入门：Agent Identity、Blueprint 与 Managed Identity
+title:      Microsoft Foundry Agent 身份治理入门：Agent Identity、Blueprint 与 Managed Identity
 subtitle:   Microsoft Foundry 系列（9）
 date:       2026-08-09
 author:     Bruce Wong
@@ -12,7 +12,7 @@ tags:
     - AI
 ---
 
-前面几篇聊了 Foundry IQ、Work IQ、Tool 和 Agent Harness。但当 Agent 从“回答问题”走向“调用工具、访问数据和执行动作”时，还有一个更基础的问题：**这次操作究竟是谁做的？**
+今天聊聊Microsoft Foundry如何对AI Agent进行权限治理的，当 Agent 从“回答问题”走向“调用工具、访问数据和执行动作”时，还有一个更基础的问题：**这次操作究竟是谁做的？**
 
 很多团队会先关注模型、Prompt 和 Tool 是否好用，等到准备上线才开始补权限。结果往往走向两个极端：要么权限不够——开发环境能运行，生产环境出现 `403`；要么权限过多——为了赶进度不断加权限，Agent 拿着远超任务需要的身份运行。前者至少会报错，反而容易被发现；后者不报错，直到某天 Agent 把不该读的数据读了出来、写进了不该写的系统，或者替用户发出了不该发的邮件。而到那时再追查，往往连"这次操作代表用户还是代表系统"都说不清。
 
