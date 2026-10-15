@@ -1,0 +1,50 @@
+[
+  {
+    "file": "01-optimization-target.png",
+    "timestamp_seconds": 43,
+    "filter": "crop=1564:1028:178:28",
+    "source": "../../foundry-optimize-cn.MP4"
+  },
+  {
+    "file": "02-evaluation-criteria.png",
+    "timestamp_seconds": 61,
+    "filter": "crop=1564:510:178:28",
+    "source": "../../foundry-optimize-cn.MP4"
+  },
+  {
+    "file": "03-candidate-results.png",
+    "timestamp_seconds": 86,
+    "filter": "crop=1554:916:320:76",
+    "source": "../../foundry-optimize-cn.MP4"
+  },
+  {
+    "file": "04-prompt-model-diff.png",
+    "timestamp_seconds": 88,
+    "filter": "crop=1344:772:288:156",
+    "source": "../../foundry-optimize-cn.MP4"
+  },
+  {
+    "file": "05-promote-version.png",
+    "timestamp_seconds": 100,
+    "filter": "crop=672:506:624:288",
+    "source": "../../foundry-optimize-cn.MP4"
+  },
+  {
+    "file": "06-tool-optimization-error.png",
+    "timestamp_seconds": 141,
+    "filter": "crop=1616:236:296:52",
+    "source": "../../foundry-optimize-cn.MP4"
+  },
+  {
+    "file": "07-router-settings.png",
+    "timestamp_seconds": 162,
+    "filter": "crop=756:1080:1162:0",
+    "source": "../../foundry-optimize-cn.MP4"
+  },
+  {
+    "file": "08-router-subset.png",
+    "timestamp_seconds": 168,
+    "filter": "crop=756:1080:1162:0",
+    "source": "../../foundry-optimize-cn.MP4"
+  }
+]
