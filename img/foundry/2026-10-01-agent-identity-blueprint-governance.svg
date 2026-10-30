@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+  <title id="title">Microsoft Foundry Agent Identity 与 Blueprint 关系图</title>
+  <desc id="desc">Foundry Agent 使用 Agent Identity 访问下游资源。Blueprint 创建并认证身份；租户中的 Blueprint Principal 记录权限同意。满足配置条件的 OAuth 权限会在签发 Token 时继承。Azure RBAC、组成员资格和 Access Package 不会自动继承。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#526579"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7860ad"/>
+    </marker>
+    <style>
+      .bg { fill:#f5f8fc }
+      .card { fill:#fff; stroke:#b8c8da; stroke-width:2 }
+      .blue { fill:#e8f1ff; stroke:#3973b9 }
+      .purple { fill:#f0ebff; stroke:#7860ad }
+      .green { fill:#e9f7ef; stroke:#44845d }
+      .amber { fill:#fff3dc; stroke:#b7791f }
+      .title { font:700 27px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; fill:#17324d }
+      .head { font:700 22px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; fill:#17324d }
+      .body { font:18px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; fill:#33485e }
+      .small { font:16px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; fill:#435970 }
+      .tag { font:700 15px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; fill:#526579 }
+      .line { fill:none; stroke:#526579; stroke-width:3; marker-end:url(#arrow) }
+      .dash { fill:none; stroke:#7860ad; stroke-width:3; stroke-dasharray:9 7; marker-end:url(#arrowPurple) }
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="1200" height="650" rx="22"/>
+  <text class="title" x="56" y="58">谁在访问资源？谁管理这个身份？</text>
+  <text class="small" x="56" y="88">以 Foundry 新模型、Agent Identity 认证为例</text>
+
+  <rect class="card blue" x="55" y="125" width="300" height="145" rx="16"/>
+  <text class="tag" x="80" y="158">FOUNDRY</text>
+  <text class="head" x="80" y="198">Agent</text>
+  <text class="body" x="80" y="232">保存模型、指令和工具配置</text>
+
+  <rect class="card green" x="450" y="125" width="300" height="145" rx="16"/>
+  <text class="tag" x="475" y="158">MICROSOFT ENTRA ID</text>
+  <text class="head" x="475" y="198">Agent Identity</text>
+  <text class="body" x="475" y="232">Token 中代表 Agent 的主体</text>
+
+  <rect class="card" x="845" y="125" width="300" height="145" rx="16"/>
+  <text class="tag" x="870" y="158">CRM / API / STORAGE</text>
+  <text class="head" x="870" y="198">下游资源</text>
+  <text class="body" x="870" y="232">验证 Token 并按授权规则放行</text>
+
+  <path class="line" d="M355 197 H438"/>
+  <text class="small" x="358" y="182">调用时使用</text>
+  <path class="line" d="M750 197 H833"/>
+  <text class="small" x="758" y="182">携带身份 Token 访问</text>
+
+  <rect class="card purple" x="450" y="355" width="300" height="130" rx="16"/>
+  <text class="tag" x="475" y="388">认证与共同设置</text>
+  <text class="head" x="475" y="426">Blueprint</text>
+  <text class="body" x="475" y="458">创建身份；保存认证配置</text>
+
+  <rect class="card amber" x="845" y="355" width="300" height="130" rx="16"/>
+  <text class="tag" x="870" y="388">当前租户中的对象</text>
+  <text class="head" x="870" y="426">Blueprint Principal</text>
+  <text class="body" x="870" y="458">记录该租户的权限同意</text>
+
+  <path class="dash" d="M600 355 V283"/>
+  <text class="small" x="615" y="319">创建并认证</text>
+  <path d="M750 420 H845" fill="none" stroke="#526579" stroke-width="3"/>
+
+  <rect class="card" x="55" y="525" width="1090" height="82" rx="14"/>
+  <text class="body" x="80" y="560">权限继承只适用于已授予、且纳入继承配置的 OAuth API 权限。</text>
+  <text class="small" x="80" y="588">Azure RBAC、组成员资格和 Access Package 不会自动复制到关联身份。</text>
+
+  <text class="small" x="56" y="632">若 MCP 连接使用用户委托、项目 Managed Identity 或其他凭据，应沿实际认证方式重新确认调用主体。</text>
+</svg>
