@@ -2,7 +2,7 @@
 layout:     post
 title:      Microsoft Foundry Agent Identity 与 Blueprint：权限给谁，策略影响谁？
 subtitle:   Agent Governance 系列（3）
-date:       2026-09-30
+date:       2026-11-15
 author:     Bruce Wong
 header-img: img/IMG_1861.jpeg
 catalog: true
