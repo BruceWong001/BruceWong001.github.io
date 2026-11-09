@@ -11,7 +11,6 @@ tags:
     - Microsoft Foundry
     - AI
 ---
-
 Microsoft Foundry Workflows 将于 **2026 年 12 月 1 日退役**。如果你已经用可视化设计器搭建了工作流，现在需要保存定义，并选择后续运行方式。
 
 微软给出了三条路径：用 **Microsoft Agent Framework** 继续编排、用 **Azure Logic Apps** 保留可视化业务流程，或通过 **A2A** 让一个 Agent 直接调用另一个。视频演示第一条路径，下面也会说明另外两条适合解决什么问题。[官方迁移指南](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/workflow#migration-guide)
