@@ -89,7 +89,7 @@ Entra 架构通常按 **Trust Boundary（信任边界）**规划 Blueprint：共
 
 验证时分别测试允许与越界的客户记录、Access Package 到期后的新 Token，以及 Blueprint 策略调整后关联身份的结果。现有 Token 和工具缓存可能影响观察结果，需单独核对。以上是待执行的验证步骤，并非租户实测结论。
 
-本篇的判断可以归结为：先确认调用身份，再检查该身份直接获得和从 Blueprint 继承的权限；修改 Blueprint 时按关联身份和信任边界评估影响。下一篇继续讨论 Toolbox 如何处理高影响工具调用的审批。
+本篇的判断可以归结为：先确认调用身份，再检查该身份直接获得和从 Blueprint 继承的权限；修改 Blueprint 时按关联身份和信任边界评估影响。
 
 **You can outsource your thinking, but you cannot outsource your understanding.**
 

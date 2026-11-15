@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+  <title id="title">Foundry Workflows retirement: three migration paths</title>
+  <desc id="desc">Microsoft Foundry Workflows (visual designer, Preview) retires on December 1, 2026; the visual designer and in-portal execution stop being supported. Export the workflow YAML first. Path 1 (recommended): Microsoft Agent Framework, code-first, exported YAML often runs with minimal changes, deploy as a Hosted Agent. Path 2: Azure Logic Apps, keep the visual designer, Foundry agents run as workflow steps, 1,400+ connectors and MCP servers. Path 3: A2A direct, no formal multi-step workflow, one agent exposed as an A2A endpoint and called by another. YAML definitions deployed as hosted agents and code orchestration keep running after the retirement date. Source: Microsoft Learn, Build a workflow in Microsoft Foundry (Migration guide).</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#526579"/>
+    </marker>
+    <style>
+      .bg { fill:#f5f8fc }
+      .card { fill:#fff; stroke:#b8c8da; stroke-width:2 }
+      .blueBadge { fill:#3973b9 }
+      .amberBadge { fill:#b7791f }
+      .purpleBadge { fill:#7860ad }
+      .pill { fill:#e8f1ff; stroke:#3973b9; stroke-width:2 }
+      .item { fill:#f2f6fb }
+      .title { font:700 26px -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif; fill:#17324d }
+      .subtitle { font:17px -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif; fill:#435970 }
+      .pillText { font:600 16px -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif; fill:#17324d }
+      .badgeText { font:700 13px -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif; fill:#fff }
+      .head { font:700 21px -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif; fill:#17324d }
+      .headSmall { font:600 15px -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif; fill:#435970 }
+      .subBlue { font:15px -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif; fill:#3973b9 }
+      .subAmber { font:15px -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif; fill:#b7791f }
+      .subPurple { font:15px -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif; fill:#7860ad }
+      .itemText { font:15px -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif; fill:#33485e }
+      .note { font:15px -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif; fill:#526579 }
+      .source { font:14px -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif; fill:#526579 }
+      .line { fill:none; stroke:#526579; stroke-width:3; marker-end:url(#arrow) }
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="1200" height="650" rx="22"/>
+
+  <text class="title" x="600" y="52" text-anchor="middle">Microsoft Foundry Workflows (visual designer · Preview)</text>
+  <text class="subtitle" x="600" y="84" text-anchor="middle">Retires December 1, 2026 — the visual designer and in-portal execution are no longer supported</text>
+
+  <rect class="pill" x="255" y="106" width="690" height="40" rx="20"/>
+  <text class="pillText" x="600" y="131" text-anchor="middle">Before migrating, export the workflow YAML — your portable artifact</text>
+  <line class="line" x1="600" y1="150" x2="600" y2="188"/>
+
+  <!-- Card 1: Microsoft Agent Framework (recommended) -->
+  <rect class="card" x="55" y="196" width="310" height="336" rx="16"/>
+  <rect class="blueBadge" x="73" y="214" width="116" height="26" rx="13"/>
+  <text class="badgeText" x="131" y="231" text-anchor="middle">RECOMMENDED</text>
+  <text class="headSmall" x="75" y="278">Microsoft</text>
+  <text class="head" x="75" y="302">Agent Framework</text>
+  <text class="subBlue" x="75" y="328">Code-first · closest match</text>
+  <rect class="item" x="71" y="342" width="278" height="56" rx="10"/>
+  <text class="itemText" x="83" y="366">Exported YAML often runs</text>
+  <text class="itemText" x="83" y="386">with minimal changes</text>
+  <rect class="item" x="71" y="408" width="278" height="56" rx="10"/>
+  <text class="itemText" x="83" y="432">Declarative YAML or code-first;</text>
+  <text class="itemText" x="83" y="452">iterate in VS Code</text>
+  <rect class="item" x="71" y="474" width="278" height="56" rx="10"/>
+  <text class="itemText" x="83" y="498">Deploy as a Hosted Agent —</text>
+  <text class="itemText" x="83" y="518">Foundry's managed code runtime</text>
+
+  <!-- Card 2: Azure Logic Apps -->
+  <rect class="card" x="445" y="196" width="310" height="336" rx="16"/>
+  <rect class="amberBadge" x="463" y="214" width="152" height="26" rx="13"/>
+  <text class="badgeText" x="539" y="231" text-anchor="middle">KEEP THE CANVAS</text>
+  <text class="head" x="465" y="302">Azure Logic Apps</text>
+  <text class="subAmber" x="465" y="328">Keep the visual designer</text>
+  <rect class="item" x="461" y="342" width="278" height="56" rx="10"/>
+  <text class="itemText" x="473" y="366">Full low-code canvas; Foundry</text>
+  <text class="itemText" x="473" y="386">agents run as workflow steps</text>
+  <rect class="item" x="461" y="408" width="278" height="76" rx="10"/>
+  <text class="itemText" x="473" y="432">Deterministic steps + AI</text>
+  <text class="itemText" x="473" y="452">reasoning; 1,400+ connectors,</text>
+  <text class="itemText" x="473" y="472">and MCP servers</text>
+
+  <!-- Card 3: A2A direct -->
+  <rect class="card" x="835" y="196" width="310" height="336" rx="16"/>
+  <rect class="purpleBadge" x="853" y="214" width="176" height="26" rx="13"/>
+  <text class="badgeText" x="941" y="231" text-anchor="middle">LIGHTWEIGHT DIRECT</text>
+  <text class="head" x="855" y="302">A2A direct</text>
+  <text class="subPurple" x="855" y="328">No formal multi-step workflow</text>
+  <rect class="item" x="851" y="342" width="278" height="56" rx="10"/>
+  <text class="itemText" x="863" y="366">Expose one agent as an A2A</text>
+  <text class="itemText" x="863" y="386">endpoint; another calls it</text>
+  <rect class="item" x="851" y="408" width="278" height="56" rx="10"/>
+  <text class="itemText" x="863" y="432">Simple task delegation</text>
+  <text class="itemText" x="863" y="452">and hand-offs</text>
+
+  <text class="note" x="600" y="566" text-anchor="middle">Outside the retirement scope: YAML definitions deployed as hosted agents and code orchestration keep running after 2026-12-01</text>
+  <text class="source" x="600" y="592" text-anchor="middle">Source: Microsoft Learn — Build a workflow in Microsoft Foundry (Migration guide)</text>
+</svg>

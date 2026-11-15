@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+  <title id="title">Microsoft Foundry Agent Identity and Blueprint relationships</title>
+  <desc id="desc">A Foundry Agent uses an Agent Identity to reach downstream resources. The Blueprint creates and authenticates identities; the Blueprint Principal in the tenant records permission consent. OAuth permissions that meet the configuration are inherited at token issuance. Azure RBAC, group membership, and Access Packages are not inherited automatically.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#526579"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7860ad"/>
+    </marker>
+    <style>
+      .bg { fill:#f5f8fc }
+      .card { fill:#fff; stroke:#b8c8da; stroke-width:2 }
+      .blue { fill:#e8f1ff; stroke:#3973b9 }
+      .purple { fill:#f0ebff; stroke:#7860ad }
+      .green { fill:#e9f7ef; stroke:#44845d }
+      .amber { fill:#fff3dc; stroke:#b7791f }
+      .title { font:700 27px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; fill:#17324d }
+      .head { font:700 22px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; fill:#17324d }
+      .body { font:18px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; fill:#33485e }
+      .small { font:16px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; fill:#435970 }
+      .tag { font:700 15px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; fill:#526579 }
+      .line { fill:none; stroke:#526579; stroke-width:3; marker-end:url(#arrow) }
+      .dash { fill:none; stroke:#7860ad; stroke-width:3; stroke-dasharray:9 7; marker-end:url(#arrowPurple) }
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="1200" height="650" rx="22"/>
+  <text class="title" x="56" y="58">Who accesses the resource, and who manages the identity?</text>
+  <text class="small" x="56" y="88">Microsoft Foundry new model, Agent Identity authentication</text>
+
+  <rect class="card blue" x="55" y="125" width="300" height="145" rx="16"/>
+  <text class="tag" x="80" y="158">FOUNDRY</text>
+  <text class="head" x="80" y="198">Agent</text>
+  <text class="body" x="80" y="224">Model, instructions,</text>
+  <text class="body" x="80" y="250">and tool configuration</text>
+
+  <rect class="card green" x="450" y="125" width="300" height="145" rx="16"/>
+  <text class="tag" x="475" y="158">MICROSOFT ENTRA ID</text>
+  <text class="head" x="475" y="198">Agent Identity</text>
+  <text class="body" x="475" y="224">The principal represented</text>
+  <text class="body" x="475" y="250">in the access token</text>
+
+  <rect class="card" x="845" y="125" width="300" height="145" rx="16"/>
+  <text class="tag" x="870" y="158">CRM / APIs / STORAGE</text>
+  <text class="head" x="870" y="198">Downstream resources</text>
+  <text class="body" x="870" y="224">Validates the token and</text>
+  <text class="body" x="870" y="250">enforces access rules</text>
+
+  <path class="line" d="M355 197 H438"/>
+  <text class="small" x="366" y="182">invokes as</text>
+  <path class="line" d="M750 197 H833"/>
+  <text class="small" x="758" y="182">with token</text>
+
+  <rect class="card purple" x="450" y="355" width="300" height="130" rx="16"/>
+  <text class="tag" x="475" y="388">AUTH &amp; SHARED SETTINGS</text>
+  <text class="head" x="475" y="426">Blueprint</text>
+  <text class="body" x="475" y="448">Creates identities;</text>
+  <text class="body" x="475" y="474">holds auth settings</text>
+
+  <rect class="card amber" x="845" y="355" width="300" height="130" rx="16"/>
+  <text class="tag" x="870" y="388">OBJECT IN THIS TENANT</text>
+  <text class="head" x="870" y="426">Blueprint Principal</text>
+  <text class="body" x="870" y="448">Records consent</text>
+  <text class="body" x="870" y="474">granted in this tenant</text>
+
+  <path class="dash" d="M600 355 V283"/>
+  <text class="small" x="615" y="319">creates and authenticates</text>
+  <path d="M750 420 H845" fill="none" stroke="#526579" stroke-width="3"/>
+
+  <rect class="card" x="55" y="525" width="1090" height="82" rx="14"/>
+  <text class="body" x="80" y="560">Inheritance applies only to OAuth API permissions that are both granted and listed in the inheritance configuration.</text>
+  <text class="small" x="80" y="588">Azure RBAC, group membership, and Access Packages are not copied to linked identities.</text>
+
+  <text class="small" x="56" y="632">If MCP uses user delegation, a project Managed Identity, or other credentials, re-confirm the calling principal along the actual auth path.</text>
+</svg>
